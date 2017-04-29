@@ -8,7 +8,8 @@ fs.readFile('/home/pi/node_apps/postgres_pass.txt', 'utf8', function (err,data) 
   }
   pass = data;
 });
-
+console.log("pass");
+console.log(pass);
 promise = require('promise');
 var options = {
     promiseLib: promise
