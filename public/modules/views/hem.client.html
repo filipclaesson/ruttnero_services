@@ -1,0 +1,25 @@
+<div class="container" >
+	<div class="page-header" id="banner">
+		<div class="row" ng-controller="CoreController">
+			<div class="col-lg-8 col-md-7 col-sm-6">
+				<p class="lead">Ta bild och se sedan i bilder </p>
+			</div>
+			<div class="col-lg-8 col-md-7 col-sm-6">
+				<button class="btn btn-success btn-lg" ng-click="takePhoto()">Ta bild</button>
+			</div>
+			<div class="col-lg-8 col-md-7 col-sm-6">
+				<a href="/#/bilder"><h2> Se alla Bilder</h2></a> 
+				<a href="{{photoUrl.dyn}}"><img ng-src="{{photoUrl.dyn}}"/></a>
+			</div>
+			<div ng-show="{{showPic}}">
+				<img ng-src="images/OLD/nophoto.jpg" />
+			</div>
+
+			<div ng-show="{{isDeveloper}}">
+				<button class="btn btn-success btn-lg" ng-click="testPost()">test Post</button>
+				<input ng-model="inputTest"></input>
+				<h1>Data: {{inputTest}}</h1>
+			</div>
+		</div>
+	</div>  
+</div>
