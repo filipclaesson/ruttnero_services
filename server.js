@@ -6,6 +6,7 @@ var RaspiCam = require('raspicam');
 var fs = require('fs');
 var sqlite = require('sqlite3').verbose();
 var db = new sqlite.Database('photos2.db');
+var pg_caller = require("./postgres_caller");
 
 app.use(express.static(__dirname + "/public"))
 
@@ -35,6 +36,13 @@ app.get('/takePicture', function (req, res){
 		camera.stop(process_id);
 		console.log('kameran är nu nerstängd');
 		
+		query = "insert into raspicam_photos (pic_timestamp, pic_path) values('2017-01-01'::timestamp, '/var/yay/pic.jpg')"
+		var handleResponse = function(rows){
+
+			console.log("got response")
+			console.log(rows)
+		}
+		pg_caller.runQuery(query, handleResponse)   
 		// db.serialize(function() {				
 		// 	db.run("CREATE TABLE if not exists pictures (url TEXT, year TEXT, month TEXT, day TEXT, hour TEXT, min TEXT, sek INTEGER)");
 		// 	var stmt = db.prepare("INSERT INTO pictures VALUES (?,?,?,?,?,?,?)");
@@ -52,6 +60,43 @@ app.get('/takePicture', function (req, res){
 
 
 });
+
+
+
+app.get("/run_postgres_query", function (req,res) {
+    var reqData = req.query;
+    var query = reqData.query;
+
+    console.log("inne i get_apartments")
+    var handleResponse = function(rows){
+        console.log("inside apartments handle response");
+        //console.log(rows)
+        //console.log(JSON.stringify(rows))
+
+
+        
+        if(rows.db_success == false){ //check if an ERRROR was returned by trafiklab
+            console.log('server sad =(')
+            res.json({
+                success: false,
+                message: "somthing went wrong :/",
+                data: rows.data
+            });
+        }else{ 
+            console.log('server happy =)')
+            //console.log(rows)
+            res.json({
+                success: true,
+                message: "Got data =)",
+                data: rows.data
+            });
+        }
+    } 
+    pg_caller.runQuery(query, handleResponse)   
+});
+
+
+
 
 
 
