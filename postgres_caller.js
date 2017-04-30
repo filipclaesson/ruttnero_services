@@ -8,8 +8,7 @@ fs.readFile('/home/pi/node_apps/postgres_pass.txt', 'utf8', function (err,data) 
   }
   pass = data;
 });
-console.log("pass");
-console.log(pass);
+
 promise = require('promise');
 var options = {
     promiseLib: promise
@@ -24,6 +23,7 @@ var cn = {
 };
 
 function runQuery(query, callback) {
+	var pass = pass
     console.log('inne i qunQuery')
     console.log(query)
 	var db = pgp(cn);
