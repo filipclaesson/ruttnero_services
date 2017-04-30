@@ -1,14 +1,3 @@
-
-var pass;
-fs = require('fs')
-fs.readFile('/home/pi/node_apps/postgres_pass.txt', 'utf8', function (err,data) {
-    //fs.readFile('/Users/Filip/postgres_pass.txt', 'utf8', function (err,data) {
-  if (err) {
-    return console.log(err);
-  }
-  pass = data;
-});
-
 promise = require('promise');
 var options = {
     promiseLib: promise
@@ -19,8 +8,21 @@ var cn = {
     port: 5432,
     database: 'postgres',
     user: 'filip',
-    password: pass
+    password: ''
 };
+
+var pass;
+fs = require('fs')
+fs.readFile('/home/pi/node_apps/postgres_pass.txt', 'utf8', function (err,data) {
+    //fs.readFile('/Users/Filip/postgres_pass.txt', 'utf8', function (err,data) {
+  if (err) {
+    return console.log(err);
+  }
+  pass = data;
+  cn["password"] = pass;
+});
+
+
 
 function runQuery(query, callback) {
 	cn["password"] = pass
