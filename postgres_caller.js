@@ -23,7 +23,7 @@ var cn = {
 };
 
 function runQuery(query, callback) {
-	var pass = pass
+	cn["password"] = pass
     console.log('inne i qunQuery')
     console.log(query)
 	var db = pgp(cn);
