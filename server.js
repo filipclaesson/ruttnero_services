@@ -12,37 +12,45 @@ app.use(express.static(__dirname + "/public"))
 
 app.get('/takePicture', function (req, res){
 	console.log("bild tas just nu");
-	var time = new Date();
-	var times = getTimestamp(time);
-	var timestamp = times.timestamp;	
+	//var time = new Date();
+	//var times = getTimestamp(time);
+	//var timestamp = times.timestamp;	
 	// ---- Skapa ny cameramodul -------
-	var photo_location = "/home/pi/raspicam_photos/ruttnero_services/bild-" + timestamp + ".jpg";
+	var photo_timestamp = new Date();
+	var photo_location = "/home/pi/raspicam_photos/ruttnero_services/";
+	var photo_name = getPicNameFromJSTimestamp(photo_timestamp)
 
 	var camera = new RaspiCam({
 		mode: "photo", 
 		w:640,
 		timeout: 500,
 		quality: 15,
-		output: photo_location
+		output: photo_location + photo_name
 	});
-
-	url = {
-    		dyn: '/images/bild-' + timestamp + '.jpg'
-    	};	
+	// fromPostgresTimestamp
+	// getPicNameFromJSTimestamp
+	// fromJSTimestamp
+	
+	photo = {
+    		path: photo_location + photo_name,
+    		timestamp: fromJSTimestamp(photo_timestamp)    	
+    };	
 
 	process_id = camera.start();
+
 	camera.on("exit", function(){
 		
 		camera.stop(process_id);
 		console.log('kameran är nu nerstängd');
 		
-		query = "insert into raspicam_photos (pic_timestamp, pic_path) values('2017-01-01'::timestamp, '/var/yay/pic.jpg')"
+		query = getInsertQuery(photo) //'insert into raspicam_photos (pic_timestamp, pic_path) values("' + String(photo.timestamp) + '"::timestamp,"' + photo_location + photo_name + '")'
+
 		var handleResponse = function(rows){
 
 			console.log("got response")
 			console.log(rows)
 		}
-		pg_caller.runQuery(query, handleResponse)   
+		pg_caller.runInsertQuery(query, handleResponse)   
 		// db.serialize(function() {				
 		// 	db.run("CREATE TABLE if not exists pictures (url TEXT, year TEXT, month TEXT, day TEXT, hour TEXT, min TEXT, sek INTEGER)");
 		// 	var stmt = db.prepare("INSERT INTO pictures VALUES (?,?,?,?,?,?,?)");
@@ -159,55 +167,76 @@ app.get('/exempel', function (req, res){
     res.json(exempel);
 });
 
-getTimestamp = function(tid){
-	
-	var year = tid.getUTCFullYear();
-	var month = tid.getUTCMonth()+1;
-	var day = tid.getUTCDate();
-	var hour = tid.getUTCHours();
-	var min = tid.getUTCMinutes();
-	var sek = tid.getUTCSeconds();
-	var offset = (tid.getTimezoneOffset()/60)
-
-	if ((hour-offset)>23){
-		day = day + 1;
-	};
-	
-	hour = (hour - offset)%24;
-	
-
-	var times = {
-		timestamp: '',
-		year: year,
-		month: month,
-		day: day,
-		hour: hour,
-		min: min,
-		sek: sek
-		}
-		
-	if (month < 10){
-		month = '0' + month.toString();
-	};	
-	if (day < 10){
-		day = '0' + day.toString();
-	};
-	if (hour < 10){
-		hour = '0' + hour.toString();
-	};
-	if (min < 10){
-		min = '0' + min.toString();
-	};
-	if (sek < 10){
-		sek = '0' + sek.toString();
-	};
-	
-	
-	var timestamp = year.toString()+'-'+month+'-'+day+'-'+hour+':'+min+':'+sek;
-	
-	times.timestamp = timestamp;
-	return times;
+fromPostgresTimestamp = function(postgres_timestamp){
+	var day = new Date(postgres_timestamp.replace(' ','T')+'Z');
+	return day
 }
+getPicNameFromJSTimestamp = function(js_timestamp){
+	str = js_timestamp.toISOString()
+	return str.slice(0, 10) + '-' + str.slice(11, 19) + '.jpg';
+}
+fromJSTimestamp = function(js_timestamp){
+	str = js_timestamp.toISOString()
+	return str.slice(0, 10) + ' ' + str.slice(11, 19);
+}
+
+getInsertQuery = function (picObject){
+    queryString = 'insert into raspicam_photos (pic_timestamp, pic_path) values($1,$2)'
+    data = [
+    picObject.timestamp,
+    picObject.path
+    ]
+    return [queryString, data];
+}
+// getTimestamp = function(tid){
+	
+// 	var year = tid.getUTCFullYear();
+// 	var month = tid.getUTCMonth()+1;
+// 	var day = tid.getUTCDate();
+// 	var hour = tid.getUTCHours();
+// 	var min = tid.getUTCMinutes();
+// 	var sek = tid.getUTCSeconds();
+// 	var offset = (tid.getTimezoneOffset()/60)
+
+// 	if ((hour-offset)>23){
+// 		day = day + 1;
+// 	};
+	
+// 	hour = (hour - offset)%24;
+	
+
+// 	var times = {
+// 		timestamp: '',
+// 		year: year,
+// 		month: month,
+// 		day: day,
+// 		hour: hour,
+// 		min: min,
+// 		sek: sek
+// 		}
+		
+// 	if (month < 10){
+// 		month = '0' + month.toString();
+// 	};	
+// 	if (day < 10){
+// 		day = '0' + day.toString();
+// 	};
+// 	if (hour < 10){
+// 		hour = '0' + hour.toString();
+// 	};
+// 	if (min < 10){
+// 		min = '0' + min.toString();
+// 	};
+// 	if (sek < 10){
+// 		sek = '0' + sek.toString();
+// 	};
+	
+	
+// 	var timestamp = year.toString()+'-'+month+'-'+day+'T'+hour+':'+min+':'+sek;
+	
+// 	times.timestamp = timestamp;
+// 	return times;
+// }
 
 app.post('/testPost', function (req, res){
 	var data = '';

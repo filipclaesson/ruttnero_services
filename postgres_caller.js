@@ -13,8 +13,8 @@ var cn = {
 
 var pass;
 fs = require('fs')
-fs.readFile('/home/pi/node_apps/postgres_pass.txt', 'utf8', function (err,data) {
-    //fs.readFile('/Users/Filip/postgres_pass.txt', 'utf8', function (err,data) {
+//fs.readFile('/home/pi/node_apps/postgres_pass.txt', 'utf8', function (err,data) {
+    fs.readFile('/Users/Filip/postgres_pass.txt', 'utf8', function (err,data) {
   if (err) {
     return console.log(err);
   }
@@ -50,8 +50,35 @@ function runQuery(query, callback) {
     });
 }
 
+function runInsertQuery(query,callback) {
+	console.log('inne i qunQuery')
+    console.log(query)
+	var db = pgp(cn);
+	db.any(query[0],query[1])
+    .then(function (data) {
+        response = {
+            db_success: true,
+            data: data
+        }
+        console.log("detta skickas till servern")
+        console.log("length: " + response.data.length)
+        callback(response)
+    })
+    .catch(function (error) {
+        response = {
+            db_success: false,
+            data: error
+        }
+        console.log(error)
+
+        callback(response)
+        // error;
+    });
+}
+
 
 
 module.exports = {
-  runQuery: runQuery
+  runQuery: runQuery,
+  runInsertQuery: runInsertQuery
 };
