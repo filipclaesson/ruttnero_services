@@ -16,7 +16,7 @@ app.get('/takePicture', function (req, res){
 	var times = getTimestamp(time);
 	var timestamp = times.timestamp;	
 	// ---- Skapa ny cameramodul -------
-	var photo_location = "/home/pi/node_apps/ruttnero_services/public/images/bild-" + timestamp + ".jpg";
+	var photo_location = "/home/pi/raspicam_photos/ruttnero_services/bild-" + timestamp + ".jpg";
 
 	var camera = new RaspiCam({
 		mode: "photo", 

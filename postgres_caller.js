@@ -25,8 +25,7 @@ fs.readFile('/home/pi/node_apps/postgres_pass.txt', 'utf8', function (err,data) 
 
 
 function runQuery(query, callback) {
-	cn["password"] = pass
-    console.log('inne i qunQuery')
+	console.log('inne i qunQuery')
     console.log(query)
 	var db = pgp(cn);
 	db.any(query, [true])
