@@ -1,11 +1,11 @@
 var express = require('express');
 var app = express();
-var Gpio = require('onoff').Gpio,
-    led = new Gpio(17, 'out');
+//var Gpio = require('onoff').Gpio,
+//    led = new Gpio(17, 'out');
 var RaspiCam = require('raspicam');
 var fs = require('fs');
-var sqlite = require('sqlite3').verbose();
-var db = new sqlite.Database('photos2.db');
+//var sqlite = require('sqlite3').verbose();
+//var db = new sqlite.Database('photos2.db');
 var pg_caller = require("./postgres_caller");
 
 app.use(express.static(__dirname + "/public"))

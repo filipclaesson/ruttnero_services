@@ -8,7 +8,7 @@ var cn = {
     port: 5432,
     database: 'postgres',
     user: 'filip',
-    password: ''
+    password: 'lagge'
 };
 
 var pass;
@@ -19,7 +19,7 @@ fs.readFile('/home/pi/node_apps/postgres_pass.txt', 'utf8', function (err,data) 
     return console.log(err);
   }
   pass = data;
-  cn["password"] = pass;
+ // cn["password"] = pass;
 });
 
 
