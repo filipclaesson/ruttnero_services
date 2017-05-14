@@ -13,8 +13,8 @@ var cn = {
 
 var pass;
 fs = require('fs')
-fs.readFile('/home/pi/node_apps/postgres_pass.txt', 'utf8', function (err,data) {
-    //fs.readFile('/Users/Filip/postgres_pass.txt', 'utf8', function (err,data) {
+//fs.readFile('/home/pi/node_apps/postgres_pass.txt', 'utf8', function (err,data) {
+    fs.readFile('/Users/Filip/postgres_pass.txt', 'utf8', function (err,data) {
   if (err) {
     return console.log(err);
   }

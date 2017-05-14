@@ -109,26 +109,33 @@ app.get("/run_postgres_query", function (req,res) {
 
 
 app.get('/getPictureUrls', function (req, res){
-	
-	var yay=[];	
-	db.serialize(function() {
-		console.log("--- Detta finns i databasen --- ");
-		db.each("SELECT url FROM pictures ORDER BY rowid DESC;", function(err, row) {
-			yay.push({
-				id: row.rowid,
-				adress: row.url}
-			);
-			console.log(row.url);
-			
-		}, function(){
-			
-			console.log("----------------------- ");
-			//console.log(yay);
-			
-			res.json(yay);
-		});
-	});
-	console.log(yay);
+	query = 'select * from raspicam_photos'
+	console.log("inne i get_apartments")
+    var handleResponse = function(rows){
+        console.log("inside apartments handle response");
+        //console.log(rows)
+        //console.log(JSON.stringify(rows))
+
+
+        
+        if(rows.db_success == false){ //check if an ERRROR was returned by trafiklab
+            console.log('server sad =(')
+            res.json({
+                success: false,
+                message: "somthing went wrong :/",
+                data: rows.data
+            });
+        }else{ 
+            console.log('server happy =)')
+            //console.log(rows)
+            res.json({
+                success: true,
+                message: "Got data =)",
+                data: rows.data
+            });
+        }
+    } 
+    pg_caller.runQuery(query, handleResponse)  
 });
 
 
